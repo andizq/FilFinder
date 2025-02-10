@@ -788,7 +788,11 @@ class Filament2D(FilamentNDBase):
 
         out_shape = skel_array.shape
         input_image = self.image_slicer(image, out_shape, pad_size=pad_size)
-
+        
+        img_ind = np.indices(image.shape)
+        self._image_rows = self.image_slicer(img_ind[0], out_shape, pad_size=pad_size)
+        self._image_cols = self.image_slicer(img_ind[1], out_shape, pad_size=pad_size)
+        
         if all_skeleton_array is not None:
             input_all_skeleton_array = \
                 self.image_slicer(all_skeleton_array, out_shape,
@@ -817,7 +821,7 @@ class Filament2D(FilamentNDBase):
             raise ValueError("Building radial profile failed. Check the input"
                              " image for NaNs.")
         else:
-            dist, radprof, weights, unbin_dist, unbin_radprof = out
+            dist, radprof, weights, unbin_dist, unbin_radprof, xpix, ypix = out
 
         # Attach units
         xunit = u.pix
@@ -834,7 +838,11 @@ class Filament2D(FilamentNDBase):
         self._radprofile = [dist, radprof]
         self._unbin_radprofile = [unbin_dist * xunit,
                                   unbin_radprof * yunit]
-
+        self._xpix = xpix
+        self._ypix = ypix        
+        self._skel_array = skel_array
+        self._all_skel_array = input_all_skeleton_array
+        
         # Make sure the given model is valid
         if not isinstance(fit_model, mod.Model):
             skip_fitting = False

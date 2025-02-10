@@ -404,6 +404,9 @@ def radial_profile(img, dist_transform_all, dist_transform_sep, offsets,
 
     width_value = []
     width_distance = []
+    xpix = []
+    ypix = []
+    
     x, y = np.where(np.isfinite(dist_transform_sep) *
                     (dist_transform_sep <= max_distance / img_scale))
     # Transform into coordinates of master image
@@ -443,12 +446,16 @@ def radial_profile(img, dist_transform_all, dist_transform_sep, offsets,
                     width_distance.append(sep_dist)
                     # valids[x_full[i], y_full[i]] = True
                     valids[x[i], y[i]] = True
+                    xpix.append(x[i])
+                    ypix.append(y[i])                    
             else:
                 width_value.append(img_val)
                 width_distance.append(sep_dist)
                 # valids[x_full[i], y_full[i]] = True
                 valids[x[i], y[i]] = True
-
+                xpix.append(x[i])
+                ypix.append(y[i])                    
+                
     if debug_mode:
         import matplotlib.pyplot as plt
         plt.subplot(121)
@@ -522,7 +529,7 @@ def radial_profile(img, dist_transform_all, dist_transform_sep, offsets,
     if return_unbinned:
         width_distance = width_distance[np.isfinite(width_value)]
         width_value = width_value[np.isfinite(width_value)]
-        return bin_centers, radial_prof, weights, width_distance, width_value
+        return bin_centers, radial_prof, weights, width_distance, width_value, xpix, ypix
     else:
         return bin_centers, radial_prof, weights
 
